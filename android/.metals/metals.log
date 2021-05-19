@@ -1,0 +1,9 @@
+[0m2021.04.24 08:09:56 INFO  Started: Metals version 0.10.1 in workspace '/home/xuanhoang232k/Desktop/tensorflow-template/android' for client vscode 1.55.0.[0m
+[0m2021.04.24 08:10:00 INFO  time: initialize in 3.66s[0m
+[0m2021.04.24 08:10:03 WARN  Build server is not auto-connectable.[0m
+[0m2021.04.24 08:17:19 INFO  shutting down Metals[0m
+[0m2021.04.30 22:58:03 INFO  Started: Metals version 0.10.2 in workspace '/home/xuanhoang232k/Desktop/tensorflow-template/android' for client vscode 1.55.2.[0m
+[0m2021.04.30 22:58:06 INFO  time: initialize in 3.57s[0m
+[0m2021.04.30 22:58:09 WARN  Build server is not auto-connectable.[0m
+[0m2021.04.30 22:58:10 INFO  skipping build import with status 'Requested'[0m
+[0m2021.04.30 23:02:28 INFO  shutting down Metals[0m
