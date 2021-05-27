@@ -25,15 +25,24 @@ import android.graphics.Paint.Join;
 import android.graphics.Paint.Style;
 import android.graphics.RectF;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Pair;
 import android.util.TypedValue;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
+
+import org.tensorflow.lite.examples.detection.GlobalData;
 import org.tensorflow.lite.examples.detection.env.BorderedText;
 import org.tensorflow.lite.examples.detection.env.ImageUtils;
 import org.tensorflow.lite.examples.detection.env.Logger;
 import org.tensorflow.lite.examples.detection.tflite.Detector.Recognition;
+
+import static java.lang.Long.parseLong;
 
 /** A tracker that handles non-max suppression and matches existing objects to new detections. */
 public class MultiBoxTracker {
@@ -113,7 +122,7 @@ public class MultiBoxTracker {
 
   public synchronized void trackResults(final List<Recognition> results, final long timestamp) {
     logger.i("Processing %d results from %d", results.size(), timestamp);
-    processResults(results);
+    processResults(results, timestamp);
   }
 
   private Matrix getFrameToCanvasMatrix() {
@@ -149,13 +158,15 @@ public class MultiBoxTracker {
               : String.format("%.2f", (100 * recognition.detectionConfidence));
       //            borderedText.drawText(canvas, trackedPos.left + cornerSize, trackedPos.top,
       // labelString);
+      Log.wtf("Hoang", "text output");
       borderedText.drawText(
           canvas, trackedPos.left + cornerSize, trackedPos.top, labelString + "%", boxPaint);
     }
   }
 
-  private void processResults(final List<Recognition> results) {
+  private void processResults(final List<Recognition> results, long timestamp) {
     final List<Pair<Float, Recognition>> rectsToTrack = new LinkedList<Pair<Float, Recognition>>();
+    List<Integer> signs = new ArrayList<>();
 
     screenRects.clear();
     final Matrix rgbFrameToScreen = new Matrix(getFrameToCanvasMatrix());
@@ -197,10 +208,21 @@ public class MultiBoxTracker {
       trackedRecognition.color = Color.GREEN;
       trackedObjects.add(trackedRecognition);
 
+//      Map<Integer, Integer> hashMap = new HashMap<Integer, Integer>();
+//      hashMap.put((int)timestamp, Integer.parseInt(trackedRecognition.title));
+//      GlobalData.getInstance().tempSign.put(timestamp, );
+
+        signs.add(Integer.parseInt(trackedRecognition.title));
+
       if (trackedObjects.size() >= COLORS.length) {
         break;
       }
     }
+
+    if (signs.size() > 0){
+      GlobalData.getInstance().tempSign.put( (int) timestamp, signs);
+    }
+    GlobalData.getInstance().processTempSign();
   }
 
   private static class TrackedRecognition {
