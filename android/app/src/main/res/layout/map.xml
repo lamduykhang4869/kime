@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".map.MapScreen">
+
+    <fragment
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"/>
+
+    <SearchView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sv_location"
+        android:elevation="5dp"
+        android:fontFamily="@font/roboto"
+        android:queryHint="Tìm kiếm địa điểm..."
+        android:iconifiedByDefault="false"
+        android:textSize="15sp"
+        android:layout_margin="15dp"
+        android:background="@drawable/background_search_bar"/>
+
+    <HorizontalScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fillViewport="true" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="70dp"
+            android:orientation="horizontal"
+            android:paddingStart="20dp">
+
+            <ImageButton
+                android:id="@+id/btn_restaurant"
+                android:layout_width="90dp"
+                android:layout_height="match_parent"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/button_restaurant"
+                android:scaleType="centerInside" />
+
+            <ImageButton
+                android:id="@+id/btn_petrol"
+                android:layout_width="90dp"
+                android:layout_height="30dp"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/button_petrol"/>
+
+            <ImageButton
+                android:id="@+id/btn_hotel"
+                android:layout_width="90dp"
+                android:layout_height="30dp"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/button_hotel"/>
+
+            <ImageButton
+                android:id="@+id/btn_coffee"
+                android:layout_width="90dp"
+                android:layout_height="30dp"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/button_coffee" />
+
+            <ImageButton
+                android:id="@+id/btn_more"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/button_more"/>
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="300dp"
+        android:layout_marginTop="200dp"
+        android:orientation="vertical">
+
+        <ImageButton
+            android:id="@+id/btn_traffic_mode"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/btn_traffic_mode"/>
+
+        <ImageButton
+            android:id="@+id/btn_gps"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/btn_gps"/>
+
+        <ImageButton
+            android:id="@+id/btn_direction"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/btn_go" />
+
+    </LinearLayout>
+
+</FrameLayout>

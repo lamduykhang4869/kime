@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="direction_key" templateMergeStrategy="preserve" translatable="false">
+        AIzaSyCrO7kgh1q6qVCRkAH2GPpjYWnnLXxsK2U
+    </string>
+
+    <string name="map_key" templateMergeStrategy="preserve" translatable="false">
+        AIzaSyCwGl6aXKJfu6iloKvg_JrJPGfJbJMs61A
+    </string>
+</resources>
