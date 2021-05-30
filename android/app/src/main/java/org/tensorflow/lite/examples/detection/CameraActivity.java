@@ -117,7 +117,7 @@ public abstract class CameraActivity extends AppCompatActivity
     apiSwitchCompat = findViewById(R.id.api_info_switch);
     bottomSheetLayout = findViewById(R.id.bottom_sheet_layout);
 
-    txtCurrentSpeed = findViewById(R.id.currentSpeed);
+    txtCurrentSpeed = findViewById(R.id.currentSpeedTxt);
 
     cropValueTextView = findViewById(R.id.crop_info);
     inferenceTimeTextView = findViewById(R.id.inference_info);
