@@ -25,6 +25,8 @@ import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.location.Location;
+import android.location.LocationManager;
 import android.media.Image;
 import android.media.Image.Plane;
 import android.media.ImageReader;
@@ -42,6 +44,7 @@ import android.view.Surface;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -50,6 +53,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import java.nio.ByteBuffer;
+import java.util.Formatter;
+import java.util.Locale;
+
 import org.tensorflow.lite.examples.detection.env.ImageUtils;
 import org.tensorflow.lite.examples.detection.env.Logger;
 
@@ -57,7 +63,8 @@ public abstract class CameraActivity extends AppCompatActivity
     implements OnImageAvailableListener,
         Camera.PreviewCallback,
         CompoundButton.OnCheckedChangeListener,
-        View.OnClickListener {
+        View.OnClickListener,
+        BaseGpsListener{
   private static final Logger LOGGER = new Logger();
 
   private static final int PERMISSIONS_REQUEST = 1;
@@ -85,6 +92,7 @@ public abstract class CameraActivity extends AppCompatActivity
   private ImageView plusImageView, minusImageView;
   private SwitchCompat apiSwitchCompat;
   private TextView threadsTextView;
+  private TextView txtCurrentSpeed;
 
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
@@ -93,9 +101,9 @@ public abstract class CameraActivity extends AppCompatActivity
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
     setContentView(R.layout.tfe_od_activity_camera);
-    Toolbar toolbar = findViewById(R.id.toolbar);
-    setSupportActionBar(toolbar);
-    getSupportActionBar().setDisplayShowTitleEnabled(false);
+//    Toolbar toolbar = findViewById(R.id.toolbar);
+//    setSupportActionBar(toolbar);
+//    getSupportActionBar().setDisplayShowTitleEnabled(false);
 
     if (hasPermission()) {
       setFragment();
@@ -108,65 +116,80 @@ public abstract class CameraActivity extends AppCompatActivity
     minusImageView = findViewById(R.id.minus);
     apiSwitchCompat = findViewById(R.id.api_info_switch);
     bottomSheetLayout = findViewById(R.id.bottom_sheet_layout);
-//    gestureLayout = findViewById(R.id.gesture_layout);
-//    sheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
-//    bottomSheetArrowImageView = findViewById(R.id.bottom_sheet_arrow);
 
-//    ViewTreeObserver vto = gestureLayout.getViewTreeObserver();
-//    vto.addOnGlobalLayoutListener(
-//        new ViewTreeObserver.OnGlobalLayoutListener() {
-//          @Override
-//          public void onGlobalLayout() {
-//            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-//              gestureLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-//            } else {
-//              gestureLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-//            }
-//            //                int width = bottomSheetLayout.getMeasuredWidth();
-//            int height = gestureLayout.getMeasuredHeight();
-//
-//            sheetBehavior.setPeekHeight(height);
-//          }
-//        });
-//    sheetBehavior.setHideable(false);
+    txtCurrentSpeed = findViewById(R.id.currentSpeed);
 
-//    sheetBehavior.setBottomSheetCallback(
-//        new BottomSheetBehavior.BottomSheetCallback() {
-//          @Override
-//          public void onStateChanged(@NonNull View bottomSheet, int newState) {
-//            switch (newState) {
-//              case BottomSheetBehavior.STATE_HIDDEN:
-//                break;
-//              case BottomSheetBehavior.STATE_EXPANDED:
-//                {
-//                  bottomSheetArrowImageView.setImageResource(R.drawable.icn_chevron_down);
-//                }
-//                break;
-//              case BottomSheetBehavior.STATE_COLLAPSED:
-//                {
-//                  bottomSheetArrowImageView.setImageResource(R.drawable.icn_chevron_up);
-//                }
-//                break;
-//              case BottomSheetBehavior.STATE_DRAGGING:
-//                break;
-//              case BottomSheetBehavior.STATE_SETTLING:
-//                bottomSheetArrowImageView.setImageResource(R.drawable.icn_chevron_up);
-//                break;
-//            }
-//          }
-//
-//          @Override
-//          public void onSlide(@NonNull View bottomSheet, float slideOffset) {}
-//        });
-
-//    frameValueTextView = findViewById(R.id.frame_info);
     cropValueTextView = findViewById(R.id.crop_info);
     inferenceTimeTextView = findViewById(R.id.inference_info);
 
-//    apiSwitchCompat.setOnCheckedChangeListener(this);
 
     plusImageView.setOnClickListener(this);
     minusImageView.setOnClickListener(this);
+
+    LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+    this.updateSpeed(null);
+  }
+
+  public void finish() {
+    super.finish();
+    System.exit(0);
+  }
+
+  private void updateSpeed(CLocation location) {
+    float nCurrentSpeed = 0;
+
+    if (location != null){
+      location.setUserMetricUnits(this.useMetricUnits());
+      nCurrentSpeed = location.getSpeed();
+    }
+
+    Formatter fmt = new Formatter(new StringBuilder());
+    fmt.format(Locale.US, "%3.1f", nCurrentSpeed);
+    String strCurrentSpeed = fmt.toString();
+    strCurrentSpeed = strCurrentSpeed.replace(' ', '0');
+    String strUnit = "miles/hour";
+    if (this.useMetricUnits()){
+      strUnit = "km/h";
+    }
+
+    txtCurrentSpeed = findViewById(R.id.currentSpeedTxt);
+    txtCurrentSpeed.setText(strCurrentSpeed + " " + strUnit);
+
+  }
+
+  @Override
+  public void onLocationChanged(Location location) {
+    if (location != null){
+      CLocation myLocation = new CLocation(location, this.useMetricUnits());
+      this.updateSpeed(myLocation);
+    }
+  }
+
+  @Override
+  public void onProviderDisabled(String provider) {
+
+  }
+
+  @Override
+  public void onProviderEnabled(String provider) {
+
+  }
+
+  @Override
+  public void onStatusChanged(String provider, int status, Bundle extras) {
+
+  }
+
+  @Override
+  public void onGpsStatusChanged(int event) {
+
+  }
+
+  private boolean useMetricUnits() {
+//    CheckBox cb = findViewById(R.id.meterCb);
+//    return cb.isChecked();
+    return true;
   }
 
   protected int[] getRgbBytes() {

@@ -30,16 +30,12 @@ public class TempActivity extends AppCompatActivity implements BaseGpsListener{
         setContentView(R.layout.activity_temp);
 
         cb = findViewById(R.id.meterCb);
-        txtCurrentSpeed = findViewById(R.id.currentSpeed);
+        txtCurrentSpeed = findViewById(R.id.currentSpeedTxt);
 
-        Log.wtf("Hoang", "1");
 
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        Log.wtf("Hoang", "2");
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-        Log.wtf("Hoang", "3");
         this.updateSpeed(null);
-        Log.wtf("Hoang", "4");
 
         cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
