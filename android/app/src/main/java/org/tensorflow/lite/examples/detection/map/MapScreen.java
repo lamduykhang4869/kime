@@ -351,7 +351,7 @@ public class MapScreen extends FragmentActivity implements OnMapReadyCallback, T
             for (int i = 0; i < hashMaps.size(); i++){
                 // Initialize hash map
                 HashMap<String, String> hashMapList = hashMaps.get(i);
-
+                Log.wtf("khang", hashMapList.toString());
                 // Get latitude
                 double lat = Double.parseDouble(hashMapList.get("lat"));
 
