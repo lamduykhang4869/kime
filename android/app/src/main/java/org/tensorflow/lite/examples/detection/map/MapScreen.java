@@ -1,10 +1,7 @@
 package org.tensorflow.lite.examples.detection.map;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
-import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -13,45 +10,36 @@ import android.os.Bundle;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 //import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import android.util.Log;
 import android.view.View;
 
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.Spinner;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.tensorflow.lite.examples.detection.R;
+import org.tensorflow.lite.examples.detection.map.helpers.FetchURL;
+import org.tensorflow.lite.examples.detection.map.helpers.JSONParser;
+import org.tensorflow.lite.examples.detection.map.helpers.TaskLoadedCallback;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -59,12 +47,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 //
 
-public class MapScreen extends FragmentActivity implements OnMapReadyCallback {
+public class MapScreen extends FragmentActivity implements OnMapReadyCallback, TaskLoadedCallback {
     GoogleMap map;
     SupportMapFragment mapFragment;
     SearchView searchView;
@@ -82,6 +69,8 @@ public class MapScreen extends FragmentActivity implements OnMapReadyCallback {
 
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+
+        mapFragment.getMapAsync(this);
 
         //Initialize fused location
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -162,9 +151,11 @@ public class MapScreen extends FragmentActivity implements OnMapReadyCallback {
             public void onClick(View v) {
                 // Initialize url
                 String url = getUrl(place1, place2, "driving");
+                Log.wtf("khang", url);
+                // Execute place task method to download json data
+                new FetchURL(MapScreen.this).execute(url, "driving");
             }
         });
-        mapFragment.getMapAsync(this);
 
     }
 
@@ -202,6 +193,8 @@ public class MapScreen extends FragmentActivity implements OnMapReadyCallback {
             public void onSuccess(Location location) {
                 // When success
                 if (location != null){
+
+                    Log.wtf("khang", "I'm here.");
                     mapFragment.getMapAsync(new OnMapReadyCallback() {
                         @Override
                         public void onMapReady(GoogleMap googleMap) {
@@ -209,6 +202,8 @@ public class MapScreen extends FragmentActivity implements OnMapReadyCallback {
                             // Initialize lat lng
                             currentLat = location.getLatitude();
                             currentLong = location.getLongitude();
+                            Log.wtf("khang", String.valueOf(currentLat));
+                            Log.wtf("khang", String.valueOf(currentLong));
                             place1 = new LatLng(currentLat, currentLong);
 
                             // Create marker options
@@ -217,7 +212,7 @@ public class MapScreen extends FragmentActivity implements OnMapReadyCallback {
                                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_location));
 
                             // Zoom map
-                            map.animateCamera(CameraUpdateFactory.newLatLngZoom(place1, 10));
+                            map.animateCamera(CameraUpdateFactory.newLatLngZoom(place1, 15));
 
                             // Add marker on map
                             map.addMarker(options);
@@ -241,17 +236,38 @@ public class MapScreen extends FragmentActivity implements OnMapReadyCallback {
         }
     }
 
-    private String getUrl(LatLng origin, LatLng des, String directionMode){
+    private String getUrl(LatLng origin, LatLng dest, String directionMode){
         // Origin of route
-        String str_origin = "origin=" + origin.latitude + "."
+        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
+        // Destination of route
+        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
+        // Mode
+        String mode = "mode=" + directionMode;
+        // Building the parameters to the web service
+        String parameters = str_origin + "&" + str_dest + "&" + mode;
+        // Output format
+        String output = "json";
+        // Building the url to the web service
+        String url = "https://maps.googleapis.com/maps/api/directions/" + output + //
+                    "?" + parameters + "&key=" + getResources().getString(R.string.map_key);
+        return url;
     }
+
+    @Override
+    public void onTaskDone(Object... values) {
+        if (currentPolyline != null)
+            currentPolyline.remove();
+        currentPolyline = map.addPolyline((PolylineOptions) values[0]);
+    }
+
+
     private class PlaceTask extends AsyncTask<String, Integer, String> {
         @Override
         protected String doInBackground(String... strings) {
             // Initialize data
             String data = null;
+            // Initialize ''data''
             try {
-                // Initialize data
                 data = downloadUrl(strings[0]);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -325,14 +341,11 @@ public class MapScreen extends FragmentActivity implements OnMapReadyCallback {
                 e.printStackTrace();
             }
 
-            // Return map list
             return mapList;
         }
 
         @Override
         protected void onPostExecute(List<HashMap<String, String>> hashMaps) {
-            // Clear map
-            map.clear();
 
             // Use for loop
             for (int i = 0; i < hashMaps.size(); i++){

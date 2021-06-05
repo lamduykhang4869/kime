@@ -1,4 +1,6 @@
-package org.tensorflow.lite.examples.detection.map;
+package org.tensorflow.lite.examples.detection.map.helpers;
+
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,8 +25,7 @@ public class JSONParser {
 
             // Get longitude from object
             String longitude = object.getJSONObject("geometry")
-                    .getJSONObject("location").getString("long");
-
+                    .getJSONObject("location").getString("lng");
             // Put all value in hash map
             dataList.put("name", name);
             dataList.put("lat", latitude);
@@ -46,7 +47,6 @@ public class JSONParser {
             try {
                 // Initialize hash map
                 HashMap<String, String> data = parseJSONObject((JSONObject) jsonArray.get(i));
-
                 // Add data in hash map list
                 dataList.add(data);
 
