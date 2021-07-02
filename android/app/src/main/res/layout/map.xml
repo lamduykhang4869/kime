@@ -18,7 +18,7 @@
         android:id="@+id/sv_location"
         android:elevation="5dp"
         android:fontFamily="@font/roboto"
-        android:queryHint="Tìm kiếm địa điểm..."
+        android:queryHint="@string/search_view"
         android:iconifiedByDefault="false"
         android:textSize="15sp"
         android:layout_margin="15dp"
@@ -36,41 +36,73 @@
             android:orientation="horizontal"
             android:paddingStart="20dp">
 
-            <ImageButton
+            <Button
                 android:id="@+id/btn_restaurant"
-                android:layout_width="90dp"
-                android:layout_height="match_parent"
-                android:layout_marginRight="5dp"
-                android:background="@drawable/button_restaurant"
-                android:scaleType="centerInside" />
-
-            <ImageButton
-                android:id="@+id/btn_petrol"
-                android:layout_width="90dp"
+                android:layout_width="100dp"
                 android:layout_height="30dp"
-                android:layout_marginRight="5dp"
-                android:background="@drawable/button_petrol"/>
+                android:layout_marginEnd="@dimen/icon_margin"
+                android:background="@drawable/icon_background"
+                android:drawableStart="@drawable/icon_restaurant"
+                android:paddingStart="@dimen/icon_padding"
+                android:scaleType="centerInside"
+                android:textAllCaps="false"
+                android:text="@string/restaurant_icon"
+                android:textStyle="bold"
+                android:drawablePadding="-8dp"
+                android:textSize="12sp"
+                android:fontFamily="@font/roboto"
+                tools:ignore="RtlSymmetry,SmallSp" />
 
-            <ImageButton
-                android:id="@+id/btn_hotel"
-                android:layout_width="90dp"
-                android:layout_height="30dp"
-                android:layout_marginRight="5dp"
-                android:background="@drawable/button_hotel"/>
-
-            <ImageButton
+            <Button
                 android:id="@+id/btn_coffee"
-                android:layout_width="90dp"
+                android:layout_width="100dp"
                 android:layout_height="30dp"
-                android:layout_marginRight="5dp"
-                android:background="@drawable/button_coffee" />
+                android:layout_marginEnd="@dimen/icon_margin"
+                android:background="@drawable/icon_background"
+                android:drawableStart="@drawable/icon_coffee"
+                android:paddingStart="@dimen/icon_padding"
+                android:scaleType="centerInside"
+                android:textAllCaps="false"
+                android:text="@string/coffee_icon"
+                android:textStyle="bold"
+                android:drawablePadding="-8dp"
+                android:textSize="12sp"
+                android:fontFamily="@font/roboto"
+                tools:ignore="RtlSymmetry,SmallSp" />
 
-            <ImageButton
-                android:id="@+id/btn_more"
-                android:layout_width="60dp"
+            <Button
+                android:id="@+id/btn_hotel"
+                android:layout_width="100dp"
                 android:layout_height="30dp"
-                android:layout_marginRight="5dp"
-                android:background="@drawable/button_more"/>
+                android:layout_marginEnd="@dimen/icon_margin"
+                android:background="@drawable/icon_background"
+                android:drawableStart="@drawable/icon_hotel"
+                android:paddingStart="@dimen/icon_padding"
+                android:scaleType="centerInside"
+                android:textAllCaps="false"
+                android:text="@string/hotel_icon"
+                android:textStyle="bold"
+                android:drawablePadding="-8dp"
+                android:textSize="12sp"
+                android:fontFamily="@font/roboto"
+                tools:ignore="RtlSymmetry,SmallSp" />
+
+            <Button
+                android:id="@+id/btn_more"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="@dimen/icon_margin"
+                android:background="@drawable/icon_background"
+                android:drawableStart="@drawable/icon_more"
+                android:paddingStart="@dimen/icon_padding"
+                android:scaleType="centerInside"
+                android:textAllCaps="false"
+                android:text="@string/more_icon"
+                android:textStyle="bold"
+                android:drawablePadding="-8dp"
+                android:textSize="12sp"
+                android:fontFamily="@font/roboto"
+                tools:ignore="RtlSymmetry,SmallSp" />
 
         </LinearLayout>
     </HorizontalScrollView>

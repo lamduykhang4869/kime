@@ -1,6 +1,7 @@
 package org.tensorflow.lite.examples.detection.map;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -22,6 +23,10 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 
 import androidx.annotation.NonNull;
 //import androidx.appcompat.widget.SearchView;
@@ -47,6 +52,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 //
@@ -69,10 +75,9 @@ public class MapScreen extends FragmentActivity implements OnMapReadyCallback, T
 
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-
         mapFragment.getMapAsync(this);
 
-        //Initialize fused location
+        // Initialize fused location
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         btn_restaurant = (ImageButton) findViewById(R.id.btn_restaurant);
@@ -112,8 +117,28 @@ public class MapScreen extends FragmentActivity implements OnMapReadyCallback, T
             }
         });
 
+        // Initialize places
+        Places.initialize(getApplicationContext(), "AIzaSyCrO7kgh1q6qVCRkAH2GPpjYWnnLXxsK2U");
+
         searchView = (SearchView) findViewById(R.id.sv_location);
+        // Set searchView non focusable
+        searchView.setFocusable(false);
+        searchView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Initialize place field list
+                List<Place.Field> fieldList = Arrays.asList(Place.Field.ADDRESS,
+                        Place.Field.LAT_LNG, Place.Field.NAME);
+                // Create intent
+                Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY,
+                        fieldList).build(MapScreen.this);
+                // Start activity result
+                startActivityForResult(intent, 100);
+            }
+        });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            public void o
             @Override
             public boolean onQueryTextSubmit(String query) {
                 String location = searchView.getQuery().toString();
@@ -133,7 +158,7 @@ public class MapScreen extends FragmentActivity implements OnMapReadyCallback, T
                         place2 = new LatLng(address.getLatitude(), address.getLongitude());
                         if (marker != null) marker.remove();
                         marker = map.addMarker(new MarkerOptions().position(place2).title(location));
-                        map.animateCamera(CameraUpdateFactory.newLatLngZoom(place2, 100));
+                        map.animateCamera(CameraUpdateFactory.newLatLngZoom(place2, 70));
                     }
                 }
                 return true;
@@ -258,6 +283,7 @@ public class MapScreen extends FragmentActivity implements OnMapReadyCallback, T
         if (currentPolyline != null)
             currentPolyline.remove();
         currentPolyline = map.addPolyline((PolylineOptions) values[0]);
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(place2, 12));
     }
 
 
@@ -375,6 +401,8 @@ public class MapScreen extends FragmentActivity implements OnMapReadyCallback, T
 
                 // Add marker on map
                 map.addMarker(options);
+
+
             }
         }
     }

@@ -10,4 +10,12 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+
+
+    // Map string
+    <string name="search_view">Tìm kiếm địa điểm...</string>
+    <string name="restaurant_icon">Nhà hàng</string>
+    <string name="hotel_icon">Khách sạn</string>
+    <string name="coffee_icon">Quán cafe</string>
+    <string name="more_icon">Thêm</string>
 </resources>
